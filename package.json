@@ -1,6 +1,6 @@
 {
-  "name": "circular-dep-detector",
-  "version": "0.1.0",
+  "name": "detect-circular-deps",
+  "version": "0.1.1",
   "description": "",
   "main": "index.js",
   "scripts": {
