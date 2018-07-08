@@ -5,6 +5,12 @@ Circular Dependencies maybe necessary in some applications and it's not easy to 
 
 This tools helps you to find Circular Dependencies that cause problems in your application.  
 
+## Installation
+```bash
+npm i detect-circular-deps -g
+```
+
+
 ## What the problems this tool could detect?
 
 ### Empty exports
