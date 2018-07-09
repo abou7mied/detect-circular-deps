@@ -33,7 +33,7 @@ module.exports = {
   name: 'b',
 };
 ```
-As you can see, when you require ./a in the b.js file it will return empty object and that definitely will cause a problem in your application.
+As you can see, when you require **a.js** in **b.js** file it will return empty object and that definitely will cause a problem in your application.
 
 We can name this situation: **alwaysEmptyExports**
 
@@ -95,7 +95,6 @@ If your file tried to access a property of another module in a circular dependen
     -e, --always-empty-exports  Report CD. which its exports are always empty even when it's async-accessed after requiring (Causes Problems)
     -s, --empty-sync-access     Report CD. which its exports are empty only when it is sync-accessed after requiring. (May causes problems in future)
     -m, --missing-properties    Report CD. which some of the properties of its exports was sync-accessed after requiring but not found (Causes Problems)
-    -u, --mute-console          Mute console messages of the required modules
     -h, --help                  output usage information
 
 ```
@@ -136,8 +135,7 @@ detect-circular-deps examples/always-empty/a.solved.js -c
 
 **.missingProperties({callback})**
 
-
-
+See **examples/api** for more info
 
 
 ## Limitations
