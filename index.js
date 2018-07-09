@@ -210,7 +210,7 @@ function start({ filter, errCallback }) {
         filterKey = null;
         break;
     }
-    errCallback(filterKey ? newResults.filter(i => i[filterKey]) : newResults);
+    errCallback(null, filterKey ? newResults.filter(i => i[filterKey]) : newResults);
   });
 }
 
@@ -277,9 +277,9 @@ program
     }
     start({
       filter,
-      errCallback: (results) => {
+      errCallback: (err, results) => {
         if (!results.length) {
-          logger(`${'✓'.green}No Problems for Circular Dependencies found!${filter ? ' [filtered]'.yellow : ''}`);
+          logger(`${'✓'.green} No Problems for Circular Dependencies found!${filter ? ' [filtered]'.yellow : ''}`);
         }
         for (let i = 0; i < results.length; i++) {
           const item = results[i];
