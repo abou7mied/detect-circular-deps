@@ -258,11 +258,8 @@ program
   .option('-e, --always-empty-exports', 'Report CD. which its exports are always empty even when it\'s async-accessed after requiring (Causes Problems)')
   .option('-s, --empty-sync-access', 'Report CD. which its exports are empty only when it is sync-accessed after requiring. (May causes problems in future)')
   .option('-m, --missing-properties', 'Report CD. which some of the properties of its exports was sync-accessed after requiring but not found (Causes Problems)')
-  .option('-u, --mute-console', 'Mute console messages of the required modules')
   .action((modulePath) => {
-    if (program.muteConsole) {
-      muteConsole();
-    }
+    muteConsole();
     let filter = filters.PROBLEMS;
     if (program.circular) {
       filter = null;
@@ -285,6 +282,7 @@ program
           const item = results[i];
           logger(formatProblem(item));
         }
+        process.exit();
       },
     });
     require(path.resolve(modulePath));
