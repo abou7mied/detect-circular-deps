@@ -48,7 +48,7 @@ function muteConsole() {
 }
 
 program
-  .version('0.1.0')
+  .version('0.1.1')
   .arguments('<file...>')
   .option('-p, --problems', 'Report CD. that causing problems (Default)')
   .option('-c, --circular', 'Report all Circular Dependencies.')
