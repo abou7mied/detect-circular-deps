@@ -8,38 +8,6 @@ require('colors');
 const logger = console.log;
 const { filters, start } = detector;
 
-function formatProblem(problem) {
-  let str = '✗  '.red;
-  const { missingProperty } = problem;
-  const modulePath = problem.stack[problem.stack.length - 1];
-  if (missingProperty) {
-    str += 'Can\'t find a property: ';
-    str += missingProperty.name.yellow;
-    str += ' at ';
-    str += modulePath;
-    str += ' (It causes problems)'.red;
-  } else if (problem.exportsNotIdentical) {
-    str += 'The exports of ';
-    str += problem.stack[0];
-    str += ' is empty when it is required at ';
-    str += modulePath;
-    str += ' (It causes problems)'.red;
-  } else if (problem.hasIncompleteExports) {
-    str += 'The exports of ';
-    str += problem.stack[0];
-    str += ' is not complete when it is required at ';
-    str += modulePath;
-    str += ' (It doesn\'t cause problems but maybe in future)'.yellow;
-  } else {
-    str += 'Circular requiring of ';
-    str += problem.stack[0];
-  }
-  str += '\n    Circular Path: ';
-  str += problem.stack.join(' > '.cyan);
-  str += '\n';
-  return str;
-}
-
 function muteConsole() {
   console.log = console.error = console.info = console.debug = console.warn = console.trace
     = console.dir = console.dirxml = console.group = console.groupEnd = console.time
@@ -80,7 +48,7 @@ if (program.args.length) {
       }
       for (let i = 0; i < results.length; i++) {
         const item = results[i];
-        logger(formatProblem(item));
+        logger('✗  '.red + item.message);
       }
       process.exit();
     },
