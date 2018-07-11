@@ -1,4 +1,10 @@
 # Detect Circular Dependencies
+
+
+![detect-circular-deps](https://img.shields.io/npm/v/detect-circular-deps.svg?style=flat-square)
+![David](https://img.shields.io/david/abou7mied/detect-circular-deps.svg?style=flat-square)
+![David](https://img.shields.io/david/dev/abou7mied/detect-circular-deps.svg?style=flat-square)
+
 Detect Circular Dependencies that occurs while requiring a module
 
 Circular Dependencies maybe necessary in some applications and it's not easy to avoid it.
