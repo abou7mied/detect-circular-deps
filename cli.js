@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 
 const program = require('commander');
+const async = require('async');
+const fs = require('fs');
 const path = require('path');
 const detector = require('./lib/index');
 require('colors');
 
 const logger = console.log;
-const { filters, start } = detector;
+const { filters, start, stop } = detector;
 
 function muteConsole() {
   console.log = console.error = console.info = console.debug = console.warn = console.trace
@@ -26,6 +28,34 @@ program
 
 program.parse(process.argv);
 
+function check({ filter, modulePath, next }) {
+  let errorOccurred;
+  start({
+    filter,
+    errCallback: (err, results) => {
+      if (err || errorOccurred) {
+        logger('⚠️  '.red + errorOccurred);
+        return;
+      }
+      if (!results.length) {
+        logger(`${'✓'.green} No Problems for Circular Dependencies found!${filter ? ' [filtered]'.yellow : ''}`);
+      }
+      for (let i = 0; i < results.length; i++) {
+        const item = results[i];
+        logger('✗  '.red + item.message);
+      }
+      next(err || errorOccurred);
+    },
+  });
+  logger(`Start detecting entrypoint: ${modulePath.green}`);
+  const absoultePath = path.resolve(modulePath);
+  errorOccurred = !fs.existsSync(absoultePath) ? `Cannot find module ${absoultePath}` : null;
+  if (!errorOccurred) {
+    require(absoultePath);
+  }
+  stop();
+}
+
 if (program.args.length) {
   muteConsole();
   let filter = filters.PROBLEMS;
@@ -40,22 +70,13 @@ if (program.args.length) {
   } else if (program.missingProperties) {
     filter = filters.MISSING_PROPERTIES;
   }
-  start({
-    filter,
-    errCallback: (err, results) => {
-      if (!results.length) {
-        logger(`${'✓'.green} No Problems for Circular Dependencies found!${filter ? ' [filtered]'.yellow : ''}`);
-      }
-      for (let i = 0; i < results.length; i++) {
-        const item = results[i];
-        logger('✗  '.red + item.message);
-      }
-      process.exit();
-    },
-  });
-  for (let i = 0; i < program.args.length; i++) {
-    const modulePath = program.args[i];
-    logger(`Start detecting entrypoint: ${modulePath.green}`);
-    require(path.resolve(modulePath));
-  }
+
+  async.eachSeries(program.args, (modulePath, next) => {
+    check({
+      filter,
+      modulePath,
+      next: () => next(),
+    });
+  }, () => process.exit());
+
 }
