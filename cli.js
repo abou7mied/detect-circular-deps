@@ -11,9 +11,7 @@ const logger = console.log;
 const { filters, start, stop } = detector;
 
 function muteConsole() {
-  console.log = console.error = console.info = console.debug = console.warn = console.trace
-    = console.dir = console.dirxml = console.group = console.groupEnd = console.time
-    = console.timeEnd = console.assert = console.profile = () => undefined;
+  console.log = console.error = console.info = console.debug = console.warn = console.trace = console.dir = console.dirxml = console.group = console.groupEnd = console.time = console.timeEnd = console.assert = console.profile = () => undefined;
   process.stderr.write = () => undefined;
 }
 
@@ -56,6 +54,8 @@ function check({ filter, modulePath, next }) {
   stop();
 }
 
+require('@babel/register');
+
 if (program.args.length) {
   muteConsole();
   let filter = filters.PROBLEMS;
@@ -78,5 +78,4 @@ if (program.args.length) {
       next: () => next(),
     });
   }, () => process.exit());
-
 }
