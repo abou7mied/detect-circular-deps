@@ -1,3 +1,3 @@
-require('./b');
+import './b';
 
 exports.name = 'a';
