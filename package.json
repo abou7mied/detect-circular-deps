@@ -16,7 +16,8 @@
     "@babel/register": "^7.0.0",
     "async": "^2.6.1",
     "colors": "^1.3.0",
-    "commander": "^2.16.0"
+    "commander": "^2.16.0",
+    "glob": "^7.1.3"
   },
   "bin": {
     "detect-circular-deps": "./cli.js"
