@@ -69,7 +69,7 @@ Suppose
 ```js
 const b = require('./b');
 
-exports.name = 'b';
+exports.name = 'a';
 ```
 **b.js**
 ```js
@@ -77,7 +77,7 @@ const a = require('./a');
 
 // console.log(a.name); // = undefined
 process.nextTick(() => {
-  console.log(a.name); // = b
+  console.log(a.name); // = a
 });
 
 exports.name = 'b';
@@ -91,7 +91,7 @@ If your file tried to access a property of another module in a circular dependen
 
 # CLI
 ```
-  Usage: detect-circular-deps [options]
+  Usage: detect-circular-deps [options] <file...>
 
   Options:
 
@@ -101,8 +101,8 @@ If your file tried to access a property of another module in a circular dependen
     -e, --always-empty-exports  Report CD. which its exports are always empty even when it's async-accessed after requiring (Causes Problems)
     -s, --empty-sync-access     Report CD. which its exports are empty only when it is sync-accessed after requiring. (May causes problems in future)
     -m, --missing-properties    Report CD. which some of the properties of its exports was sync-accessed after requiring but not found (Causes Problems)
+    -d, --debug                 Print debugging messages
     -h, --help                  output usage information
-
 ```
 
 ## Examples
@@ -127,6 +127,28 @@ detect-circular-deps examples/always-empty/a.solved.js -c
 ```
 ✗  Circular requiring of examples/always-empty/a.solved
     Circular Path: examples/always-empty/a.solved > examples/always-empty/b.solved
+```
+
+## Support es6 import/export
+Now you can run the tool on es6 files,  **babel-register** library is included in the tool but you need to have **.babelrc** file in your working directory or any upper directory.
+
+There are examples of es6 import/export
+
+```bash
+detect-circular-deps examples/es6/always-empty/a.js
+```
+```
+Start detecting entrypoint: examples/es6/always-empty/a.js
+✗  The exports of examples/es6/always-empty/a is empty when it is required at examples/es6/always-empty/b (It causes problems)
+    Circular Path: examples/es6/always-empty/a > examples/es6/always-empty/b
+```
+
+### Wildcard matching
+This tool uses [glob](https://github.com/isaacs/node-glob) to match files using the patterns the shell uses but u need to qoute the pattern so that your terminal don't override it
+An example for running the tool on all files in this directory and sub directories
+
+```bash
+detect-circular-deps '*/**/*.js'
 ```
 
 # API
