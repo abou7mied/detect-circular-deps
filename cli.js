@@ -99,6 +99,7 @@ async function run() {
       modulePath,
     });
   }
+  process.exit();
 }
 
 if (program.args.length) {
