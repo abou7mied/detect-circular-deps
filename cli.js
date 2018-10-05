@@ -22,7 +22,10 @@ async function getPaths(args) {
     async.map(args, (pattern, next) => {
       glob(pattern, {
         nodir: true,
-        ignore: ['node_modules/**'],
+        ignore: [
+          '**/node_modules/**',
+          './**/node_modules/**',
+        ],
       }, next);
     }, (err, results) => {
       if (err) {
