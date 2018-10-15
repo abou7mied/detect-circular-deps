@@ -21,7 +21,7 @@ npm i detect-circular-deps -g
 
 ### Empty exports
 
-Suppose you have a two modules
+Suppose you have two modules
 
 **a.js**
 ```js
@@ -39,7 +39,13 @@ module.exports = {
   name: 'b',
 };
 ```
-As you can see, when you require **a.js** in **b.js** file it will return empty object and that definitely will cause a problem in your application.
+
+And your entrypoint trying to
+```js
+require("./a.js");
+```
+
+As you can see, when you require **a.js**, the **a.js** file is required again in **b.js** file and it will return empty object and that definitely will cause a problem in your application.
 
 We can name this situation: **alwaysEmptyExports**
 
@@ -165,6 +171,47 @@ detect-circular-deps '*/**/*.js'
 
 See **examples/api** for more info
 
+
+## Add to your tests
+You can use the API in your tests to ensure that there is no circular dependencies in your application.
+
+```js
+const detectCircularDeps = require('../index'); // replace with require("detect-circular-deps")
+
+describe('Circular Dependencies Issues', () => {
+  it('Should not cause a problem', (done) => {
+    detectCircularDeps.problems({
+      callback(err, results) {
+        if (err) {
+          throw err;
+        }
+        if (results[0]) {
+          throw new Error(results[0].message);
+        }
+        done();
+        process.exit();
+      },
+    });
+    require('./always-empty/a');
+  });
+  it('Should not cause a problem', (done) => {
+    detectCircularDeps.problems({
+      callback(err, results) {
+        if (err) {
+          throw err;
+        }
+        if (results[0]) {
+          throw new Error(results[0].message);
+        }
+        done();
+        process.exit();
+      },
+    });
+    require('./always-empty/a.solved');
+  });
+});
+
+```
 
 ## Limitations
 This tool works only with node.js environment as it depends on the built-in node.js **module** package
