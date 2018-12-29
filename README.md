@@ -169,6 +169,8 @@ detect-circular-deps '*/**/*.js'
 
 **.missingProperties({callback})**
 
+All methods return a promise also you can pass callback in the args
+
 See **examples/api** for more info
 
 
@@ -179,35 +181,27 @@ You can use the API in your tests to ensure that there is no circular dependenci
 const detectCircularDeps = require('../index'); // replace with require("detect-circular-deps")
 
 describe('Circular Dependencies Issues', () => {
-  it('Should not cause a problem', (done) => {
-    detectCircularDeps.problems({
-      callback(err, results) {
-        if (err) {
-          throw err;
-        }
-        if (results[0]) {
-          throw new Error(results[0].message);
-        }
-        done();
-        process.exit();
-      },
-    });
-    require('./always-empty/a');
+  it('Should not cause a problem', async () => {
+    const promise = detectCircularDeps.problems();
+    require('../always-empty/a'); // you must require your module before the promise being resolved
+    const results = await promise;
+    if (results[0]) {
+      throw new Error(results[0].message);
+    }
+    /*
+    * if your module starts a server or run something prevents the
+    * process from exiting, you need to exit it after the promise was resolved
+    */
+    process.exit(0);
   });
-  it('Should not cause a problem', (done) => {
-    detectCircularDeps.problems({
-      callback(err, results) {
-        if (err) {
-          throw err;
-        }
-        if (results[0]) {
-          throw new Error(results[0].message);
-        }
-        done();
-        process.exit();
-      },
-    });
-    require('./always-empty/a.solved');
+  it('Should not cause a problem', async () => {
+    const promise = detectCircularDeps.problems();
+    require('../always-empty/a.solved');
+    const results = await promise;
+    if (results[0]) {
+      throw new Error(results[0].message);
+    }
+    process.exit(0);
   });
 });
 

@@ -1,9 +1,8 @@
-const detect = require('../../index');
+const detector = require('../../index');
 
-detect.circular({
-  callback(err, results) {
-    console.log('results', results);
-  },
-});
+detector.circular()
+  .then((results) => {
+    console.log(results);
+  });
 
-const myModule = require('../always-empty/a');
+require('../always-empty/a');

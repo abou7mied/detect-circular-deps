@@ -2,35 +2,35 @@ const detector = require('./lib/index');
 
 const { start, filters } = detector;
 
-function problems({ callback }) {
-  start({
+function problems({ callback } = {}) {
+  return start({
     filter: filters.PROBLEMS,
     errCallback: callback,
   });
 }
 
-function circular({ callback }) {
-  start({
+function circular({ callback } = {}) {
+  return start({
     errCallback: callback,
   });
 }
 
-function alwaysEmptyExports({ callback }) {
-  start({
+function alwaysEmptyExports({ callback } = {}) {
+  return start({
     filter: filters.ALWAYS_EMPTY,
     errCallback: callback,
   });
 }
 
-function emptySyncAccess({ callback }) {
-  start({
+function emptySyncAccess({ callback } = {}) {
+  return start({
     filter: filters.SYNC_EMPTY,
     errCallback: callback,
   });
 }
 
-function missingProperties({ callback }) {
-  start({
+function missingProperties({ callback } = {}) {
+  return start({
     filter: filters.MISSING_PROPERTIES,
     errCallback: callback,
   });

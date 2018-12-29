@@ -4,23 +4,27 @@
 Get all circular dependencies detected while requiring a module
 
 ```js
-const detect = require('../../index');
+const detector = require('../../index');
 
-detect.circular({
-  callback(err, results) {
-    console.log('results', results);
-  },
-});
+detector.circular()
+  .then((results) => {
+    console.log(results);
+  });
 
-const myModule = require('../always-empty/a');
+require('../always-empty/a');
 ```
 
 ```
-results [ { file: '../always-empty/a',
-    stack: [ '../always-empty/a', '../always-empty/b' ],
+[ 
+  { 
+    file: 'examples/always-empty/a',
+    stack: [ 'examples/always-empty/a', 'examples/always-empty/b' ],
     exportsNotIdentical: true,
     hasIncompleteExports: true,
-    causingProblems: true } ]
+    causingProblems: true,
+    message: 'The exports of examples/always-empty/a is empty when it is required at examples/always-empty/b\u001b[31m (It causes problems)\u001b[39m\n    Circular Path: examples/always-empty/a\u001b[36m > \u001b[39mexamples/always-empty/b\n'
+  } 
+]
 ```
 Each item has some properties which used to filter the results to be used in another functions
 
