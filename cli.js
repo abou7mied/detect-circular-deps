@@ -37,7 +37,7 @@ async function getPaths(args) {
 }
 
 program
-  .version('1.2.3')
+  .version('1.3.0')
   .arguments('<file...>')
   .option('-p, --problems', 'Report CD. that causing problems (Default)')
   .option('-c, --circular', 'Report all Circular Dependencies.')
