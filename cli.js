@@ -1,9 +1,7 @@
 #!/usr/bin/env node
 
 const program = require('commander');
-const async = require('async');
 const glob = require('glob');
-const util = require('util');
 const fs = require('fs');
 const path = require('path');
 const detector = require('./lib/index');
@@ -17,23 +15,34 @@ function muteConsole() {
   process.stderr.write = () => undefined;
 }
 
-async function getPaths(args) {
+function resolvePath(pattern) {
   return new Promise((resolve, reject) => {
-    async.map(args, (pattern, next) => {
-      glob(pattern, {
-        nodir: true,
-        ignore: [
-          '**/node_modules/**',
-          './**/node_modules/**',
-        ],
-      }, next);
-    }, (err, results) => {
+    return glob(pattern, {
+      nodir: true,
+      ignore: [
+        '**/node_modules/**',
+        './**/node_modules/**',
+      ],
+    }, (err, resolved) => {
       if (err) {
-        return reject(err);
+        reject(err);
+      } else {
+        resolve(resolved);
       }
-      resolve(results.reduce((acc, val) => acc.concat(val), []));
     });
   });
+}
+
+async function getPaths(args) {
+  const results = [];
+  for (const pattern of args) {
+    if (pattern.indexOf('*') === -1) {
+      results.push(pattern);
+    } else {
+      results.concat(await resolvePath(pattern));
+    }
+  }
+  return results;
 }
 
 program
@@ -44,39 +53,40 @@ program
   .option('-e, --always-empty-exports', 'Report CD. which its exports are always empty even when it\'s async-accessed after requiring (Causes Problems)')
   .option('-s, --empty-sync-access', 'Report CD. which its exports are empty only when it is sync-accessed after requiring. (May causes problems in future)')
   .option('-m, --missing-properties', 'Report CD. which some of the properties of its exports was sync-accessed after requiring but not found (Causes Problems)')
+  .option('--es6', 'Enable es6 modules')
   .option('-d, --debug', 'Print debugging messages');
 
 program.parse(process.argv);
 
-async function check({ filter, modulePath }, next) {
-  let errorOccurred;
-  startDetector({
-    filter,
-    errCallback: (err, results) => {
-      if (err || errorOccurred) {
-        logger('⚠️  '.red + errorOccurred);
-        return;
-      }
-      if (!results.length) {
-        logger(`${'✓'.green} No Problems for Circular Dependencies found!${filter ? ' [filtered]'.yellow : ''}`);
-      }
-      for (let i = 0; i < results.length; i++) {
-        const item = results[i];
-        logger('✗  '.red + item.message);
-      }
-      next(err || errorOccurred);
-    },
-  });
-  logger(`Start detecting entrypoint: ${modulePath.green}`);
-  const absoultePath = path.resolve(modulePath);
-  errorOccurred = !fs.existsSync(absoultePath) ? `Cannot find module ${absoultePath}` : null;
-  if (!errorOccurred) {
-    require(absoultePath);
+async function check({ filter, modulePath }) {
+  try {
+    const promise = startDetector({ filter });
+    logger(`Start detecting EntryPoint: ${modulePath.green}`);
+    const absolutePath = path.resolve(modulePath);
+    const notExists = !fs.existsSync(absolutePath) ? `Cannot find module ${absolutePath}` : null;
+    if (notExists) {
+      throw new Error(notExists);
+    }
+
+    require(absolutePath);
+
+    const results = await promise;
+    if (!results.length) {
+      logger(`${'✓'.green} No Problems for Circular Dependencies found!${filter ? ' [filtered]'.yellow : ''}`);
+    }
+    for (let i = 0; i < results.length; i++) {
+      const item = results[i];
+      logger('✗  '.red + item.message);
+    }
+  } catch (err) {
+    logger('⚠️  '.red + err);
   }
   stop();
 }
 
-require('@babel/register');
+if (program.es6) {
+  require('@babel/register');
+}
 
 async function run() {
   if (!program.debug) {
@@ -95,9 +105,8 @@ async function run() {
     filter = filters.MISSING_PROPERTIES;
   }
   const paths = await getPaths(program.args);
-  const checkPromisified = util.promisify(check);
   for (const modulePath of paths) {
-    await checkPromisified({
+    await check({
       filter,
       modulePath,
     });
