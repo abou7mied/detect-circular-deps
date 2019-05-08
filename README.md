@@ -136,12 +136,16 @@ detect-circular-deps examples/always-empty/a.solved.js -c
 ```
 
 ## Support es6 import/export
-Now you can run the tool on es6 files,  **babel-register** library is included in the tool but you need to have **.babelrc** file in your working directory or any upper directory.
+Now you can run the tool on es6 files
 
-There are examples of es6 import/export
+You need to add the flag **--es6** to enable es6 modules.
+
+The package **babel-register** is used to support es6 at runtime but you need to add **.babelrc** file to your working directory or any upper directory.
+
+Example:
 
 ```bash
-detect-circular-deps examples/es6/always-empty/a.js
+detect-circular-deps --es6 examples/es6/always-empty/a.js
 ```
 ```
 Start detecting entrypoint: examples/es6/always-empty/a.js
@@ -169,7 +173,7 @@ detect-circular-deps '*/**/*.js'
 
 **.missingProperties({callback})**
 
-All methods return a promise also you can pass callback in the args
+All methods return a **promise**, also you can pass callback in the args
 
 See **examples/api** for more info
 
@@ -188,11 +192,6 @@ describe('Circular Dependencies Issues', () => {
     if (results[0]) {
       throw new Error(results[0].message);
     }
-    /*
-    * if your module starts a server or run something prevents the
-    * process from exiting, you need to exit it after the promise was resolved
-    */
-    process.exit(0);
   });
   it('Should not cause a problem', async () => {
     const promise = detectCircularDeps.problems();
