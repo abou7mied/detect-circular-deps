@@ -6,10 +6,9 @@
   "extends": "airbnb-base",
   "parserOptions": {
     "sourceType": "module",
-    "ecmaVersion": 2017
+    "ecmaVersion": 2018
   },
   "plugins": [
-    "html",
     "import"
   ],
   "rules": {

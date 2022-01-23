@@ -27,10 +27,9 @@
     "url": "http://github.com/abou7mied/detect-circular-deps"
   },
   "devDependencies": {
-    "eslint": "^5.11.1",
-    "eslint-config-airbnb-base": "^13.1.0",
-    "eslint-plugin-html": "^5.0.0",
+    "eslint": "^8.7.0",
+    "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.14.0",
-    "mocha": "^5.2.0"
+    "mocha": "^9.1.4"
   }
 }
