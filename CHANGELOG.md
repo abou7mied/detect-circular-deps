@@ -1,7 +1,11 @@
 ## 3.0.0 (23/01/2022)
 
-#### breaking changes
-- the CLI will return the exit code "1" if problems detected  
+#### Breaking changes
+- The CLI will return the exit code "1" if problems detected  
+
+#### Upgrade
+- Audit and bump the packages
+
 ## 2.0.0 (07/05/2019)
 
 ### Bug fixes
