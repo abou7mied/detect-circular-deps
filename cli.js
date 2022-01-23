@@ -59,6 +59,7 @@ program
 program.parse(process.argv);
 
 async function check({ filter, modulePath }) {
+  let exitCode = 0;
   try {
     const promise = startDetector({ filter });
     logger(`Start detecting EntryPoint: ${modulePath.green}`);
@@ -71,17 +72,23 @@ async function check({ filter, modulePath }) {
     require(absolutePath);
 
     const results = await promise;
-    if (!results.length) {
-      logger(`${'✓'.green} No Problems for Circular Dependencies found!${filter ? ' [filtered]'.yellow : ''}`);
-    }
     for (let i = 0; i < results.length; i++) {
       const item = results[i];
       logger('✗  '.red + item.message);
     }
+    if (!results.length) {
+      logger(`${'✓'.green} No Problems for Circular Dependencies found!${filter ? ' [filtered]'.yellow : ''}`);
+    } else {
+      exitCode = 1;
+    }
   } catch (err) {
     logger('⚠️  '.red + err);
+    exitCode = 1;
   }
   stop();
+  if (exitCode !== 0) {
+    process.exit(exitCode);
+  }
 }
 
 if (program.es6) {
